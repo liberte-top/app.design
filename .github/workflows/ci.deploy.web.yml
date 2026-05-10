@@ -1,0 +1,139 @@
+name: ci.deploy.web
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - ".dockerignore"
+      - "web/**"
+      - ".github/workflows/ci.deploy.web.yml"
+  pull_request:
+    paths:
+      - ".dockerignore"
+      - "web/**"
+      - ".github/workflows/ci.deploy.web.yml"
+
+jobs:
+  build-test-web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Node
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: "22.18.0"
+
+      - name: Configure liberte packages auth
+        run: |
+          set -euo pipefail
+          cat > "$HOME/.npmrc" <<EOF
+          @liberte:registry=https://packages.liberte.top/
+          //packages.liberte.top/:_authToken=${LIBERTE_PACKAGES_NPM_TOKEN}
+          EOF
+        env:
+          LIBERTE_PACKAGES_NPM_TOKEN: ${{ secrets.LIBERTE_PACKAGES_NPM_TOKEN }}
+
+      - name: Enable corepack pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
+
+      - name: Install dependencies
+        working-directory: web
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build web
+        working-directory: web
+        env:
+          VITE_ENV_LABEL: ci
+        run: pnpm build
+
+      - name: Build web image
+        env:
+          LIBERTE_PACKAGES_NPM_TOKEN: ${{ secrets.LIBERTE_PACKAGES_NPM_TOKEN }}
+        run: docker build --secret id=liberte_packages_npm_token,env=LIBERTE_PACKAGES_NPM_TOKEN -f ./web/Dockerfile .
+
+      - name: Setup Buildx
+        if: github.event_name != 'pull_request'
+        uses: docker/setup-buildx-action@v4.0.0
+
+      - name: Login to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push web image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7.1.0
+        with:
+          context: .
+          file: ./web/Dockerfile
+          push: true
+          build-args: |
+            VITE_ENV_LABEL=ci
+          secrets: |
+            liberte_packages_npm_token=${{ secrets.LIBERTE_PACKAGES_NPM_TOKEN }}
+          tags: |
+            ghcr.io/liberte-top/app-design-web:main
+            ghcr.io/liberte-top/app-design-web:sha-${{ github.sha }}
+
+      - name: Checkout kubernetes repo
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: liberte-top/kubernetes
+          ref: main
+          token: ${{ secrets.KUBERNETES_REPO_TOKEN }}
+          path: kubernetes
+
+      - name: Update design-web image tag
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('kubernetes/charts/app/design/values.yaml')
+          replacement = '    tag: sha-${{ github.sha }} # design-web-image'
+          lines = []
+          for line in path.read_text().splitlines():
+            if line.strip().endswith('# design-web-image'):
+              line = replacement
+            lines.append(line)
+          path.write_text('\n'.join(lines) + '\n')
+          PY
+      - name: Create kubernetes promotion PR
+        if: github.event_name != 'pull_request'
+        id: create_pr
+        uses: peter-evans/create-pull-request@v8.1.1
+        with:
+          token: ${{ secrets.KUBERNETES_REPO_TOKEN }}
+          path: kubernetes
+          branch: promote/design-web-${{ github.sha }}
+          delete-branch: true
+          commit-message: "chore: promote design-web image"
+          title: "chore: promote design-web image"
+          body: |
+            Update `design-web` to `ghcr.io/liberte-top/app-design-web:sha-${{ github.sha }}`.
+
+      - name: Enable PR auto-merge
+        if: github.event_name != 'pull_request' && steps.create_pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.KUBERNETES_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+          pr_number="${{ steps.create_pr.outputs.pull-request-number }}"
+          gh pr merge --repo "liberte-top/kubernetes" --squash "$pr_number" || {
+            gh pr update-branch --repo "liberte-top/kubernetes" "$pr_number" --rebase
+            gh pr merge --repo "liberte-top/kubernetes" --squash "$pr_number"
+          }
