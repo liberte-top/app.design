@@ -1,0 +1,19 @@
+{
+  "scan": {
+    "include": ["**/*.rs", "**/*.ts", "**/*.tsx", "**/*.vue", "**/*.svelte"],
+    "exclude": [
+      "**/node_modules/**",
+      "**/target/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.svelte-kit/**",
+      "**/.next/**",
+      "**/.turbo/**",
+      "**/.task/**",
+      "**/coverage/**",
+      "**/.output/**",
+      "**/.vercel/**",
+      "**/*.d.ts"
+    ]
+  }
+}
