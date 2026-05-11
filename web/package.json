@@ -10,7 +10,7 @@
     "preview": "vite preview --host --port 5173"
   },
   "dependencies": {
-    "@liberte/svelte-components": "0.4.2",
+    "@liberte/svelte-components": "0.5.0",
     "svelte": "5.55.5"
   },
   "devDependencies": {

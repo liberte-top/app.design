@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@liberte/svelte-components':
-        specifier: 0.4.2
-        version: 0.4.2(svelte@5.55.5)
+        specifier: 0.5.0
+        version: 0.5.0(svelte@5.55.5)
       svelte:
         specifier: 5.55.5
         version: 5.55.5
@@ -52,8 +52,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@liberte/svelte-components@0.4.2':
-    resolution: {integrity: sha512-g0jk9FsIpoUMkit3ltXMx+mdyE5qfEDHi8WCOOoP86ezRyTe4LwoJrg2C81S8UeIqGBzjqbpjTSsL2Dkvw1+MQ==, tarball: https://packages.liberte.top/@liberte%2Fsvelte-components/-/svelte-components-0.4.2.tgz}
+  '@liberte/svelte-components@0.5.0':
+    resolution: {integrity: sha512-pjQraUcelZcApeg5QuQcVjV3L0o1zK8NDcBA9y3nuiaNIBaZ1jEfQxLt/cX9giNPDWOzbL67bT2+on9QahjLAg==, tarball: https://packages.liberte.top/@liberte%2Fsvelte-components/-/svelte-components-0.5.0.tgz}
     peerDependencies:
       svelte: 5.55.5
 
@@ -456,7 +456,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@liberte/svelte-components@0.4.2(svelte@5.55.5)':
+  '@liberte/svelte-components@0.5.0(svelte@5.55.5)':
     dependencies:
       svelte: 5.55.5
 
