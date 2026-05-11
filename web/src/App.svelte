@@ -23,9 +23,8 @@
   import Buttons from "./sections/Buttons.svelte";
   import Inputs from "./sections/Inputs.svelte";
   import Pills from "./sections/Pills.svelte";
-  import Alerts from "./sections/Alerts.svelte";
+  import Feedback from "./sections/Feedback.svelte";
   import Identity from "./sections/Identity.svelte";
-  import Loading from "./sections/Loading.svelte";
   import Layout from "./sections/Layout.svelte";
   import Typography from "./sections/Typography.svelte";
   import Data from "./sections/Data.svelte";
@@ -64,11 +63,11 @@
       summary: "Pill — tone × variant × size, the inline status indicator.",
     },
     {
-      path: "atoms/alerts",
-      label: "Alerts",
+      path: "atoms/feedback",
+      label: "Feedback",
       group: "Atoms",
-      Component: Alerts,
-      summary: "Alert — block-level status feedback, with inline content and nested Stack.",
+      Component: Feedback,
+      summary: "Alert + Spinner — block-level status banners and the pure-CSS rotor for in-flight actions.",
     },
     {
       path: "atoms/identity",
@@ -76,13 +75,6 @@
       group: "Atoms",
       Component: Identity,
       summary: "Mark, Wordmark, Avatar — the three brand-presence atoms.",
-    },
-    {
-      path: "atoms/loading",
-      label: "Loading",
-      group: "Atoms",
-      Component: Loading,
-      summary: "Spinner — pure-CSS rotor that adapts to host color.",
     },
     {
       path: "primitives/layout",
