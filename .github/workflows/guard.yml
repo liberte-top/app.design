@@ -1,0 +1,25 @@
+name: guard
+
+on:
+  pull_request: {}
+  push:
+    branches:
+      - main
+
+jobs:
+  flavor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Install flavor
+        env:
+          FLAVOR_RELEASES_PUBLIC_URL: https://releases.flavor.perish.uk
+        run: |
+          set -euo pipefail
+          curl -fsSL "${FLAVOR_RELEASES_PUBLIC_URL}/stable/latest/install.sh" \
+            | sh -s -- install --public-url "${FLAVOR_RELEASES_PUBLIC_URL}"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Flavor check
+        run: flavor check
