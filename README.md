@@ -15,7 +15,7 @@ Public visual reference for `@liberte/svelte-components`. Lives at `design.liber
 
 Container-mode loop lives in the workspace `compose.yml`; this repo does not carry its own `docker-compose.yml`.
 
-1. From the workspace root, set `LIBERTE_PACKAGES_NPM_TOKEN` in workspace `.env` (BuildKit secret source for the web image build).
+1. Confirm the development machine already exports `LIBERTE_PACKAGES_NPM_TOKEN`; workspace compose consumes it as a BuildKit secret.
 2. Bring up the design profile from workspace root: `docker compose --profile design up -d`.
 3. Open `http://localhost:${DESIGN_WEB_PUBLIC_PORT}`.
 4. The API is at `http://localhost:${DESIGN_API_PORT}/api/v1/health` if you need to confirm it is alive.

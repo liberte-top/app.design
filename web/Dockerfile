@@ -8,7 +8,7 @@ ENV VITE_ENV_LABEL=$VITE_ENV_LABEL
 
 COPY web/package.json web/pnpm-lock.yaml* ./
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-    --mount=type=secret,id=liberte_packages_npm_token,required=false \
+    --mount=type=secret,id=liberte_packages_npm_token,required=true \
     set -eu; \
     trap 'rm -f /root/.npmrc' EXIT; \
     token="$(cat /run/secrets/liberte_packages_npm_token 2>/dev/null || true)"; \

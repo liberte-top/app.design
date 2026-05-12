@@ -57,5 +57,5 @@ Workspace `.env` (`liberte.top/.env.example`):
 ## Shared Package Consumption
 - `web/` consumes `@liberte/svelte-components` from `https://packages.liberte.top/`.
 - Repository-level npm registry mapping may be committed when it contains no auth material.
-- Keep npm auth material in machine-level config, CI secrets, or explicit build args only.
-- CI and Docker builds need `packages.liberte.top` read access; pass `LIBERTE_PACKAGES_NPM_TOKEN` as a BuildKit secret rather than vendoring package sources into the image build context.
+- Keep npm auth material in machine-level config or CI secrets only.
+- CI and Docker builds need `packages.liberte.top` read access; pass `LIBERTE_PACKAGES_NPM_TOKEN` as a BuildKit secret rather than vendoring package sources into the image build context. Local compose gets it from the inherited machine environment; do not write registry tokens into workspace `.env`.
